@@ -17,12 +17,14 @@ sqs = boto3.client('sqs', region_name=REGION_NAME)
 
 def lambda_handler(event, context):
     headers = event.get('headers', {})
-    
-    if VALIDATION_KEY not in headers or headers[VALIDATION_KEY] != VALIDATION_VALUE:
-        return {
-            'statusCode': 403,
-            'body': f"Validation failed. Invalid validation key or value provided in headers"
-        }
+
+    # Perform validation only if VALIDATION_KEY and VALIDATION_VALUE are defined
+    if VALIDATION_KEY and VALIDATION_VALUE:
+        if VALIDATION_KEY not in headers or headers[VALIDATION_KEY] != VALIDATION_VALUE:
+            return {
+                'statusCode': 403,
+                'body': f"Validation failed. Invalid validation key or value provided in headers"
+            }
 
     body = json.loads(event.get('body', '{}'))
 
